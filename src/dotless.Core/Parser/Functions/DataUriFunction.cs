@@ -37,18 +37,26 @@
             return filename;
         }
 
+        private string ReconstructPhysicalPath(string filename)
+        {
+          if (Path.IsPathRooted(filename)) return filename;
+          return Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Location.FileName), filename));
+        }
+
         private string ConvertFileToBase64(string filename)
         {
             string base64;
+            string path = string.Empty;
             try
             {
-                base64 = Convert.ToBase64String(File.ReadAllBytes(filename));
+                path = ReconstructPhysicalPath(filename);
+                base64 = Convert.ToBase64String(File.ReadAllBytes(path));
             }
             catch (IOException e)
             {
                 // this is more general than just a check to see whether the file exists
                 // it could fail for other reasons like security permissions
-                throw new ParsingException(String.Format("Data-uri function could not read file '{0}'", filename), e, Location);
+                throw new ParsingException(String.Format("Data-uri function could not read file '{0}' [{1}][{2}]", filename, Path.GetFullPath(filename), path), e, Location);
             }
             return base64;
         }
