@@ -195,6 +195,11 @@
             if (string.IsNullOrEmpty(css))
                 return "";
 
+            return ExtractExpressionResult(css);
+        }
+
+        public string ExtractExpressionResult(string css)
+        {
             var start = css.IndexOf("expression:");
             var end =  css.LastIndexOf(DefaultEnv().Compress ? '}' : ';');
 
